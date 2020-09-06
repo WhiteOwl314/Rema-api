@@ -45,4 +45,31 @@ public class TestController {
         mailSender.send(message);
     }
     //tmp
+
+    @RequestMapping(
+            value = "/postTest",
+            method = RequestMethod.POST
+    )
+    public String postTest () {
+        return "success";
+    }
+
+    @PostMapping(
+            value = "/postTestWithBody"
+    )
+    public String postTestWithBody(
+            @RequestBody TestVo testVo
+    ){
+        return "success";
+    }
+
+
+    @PostMapping(
+            value = "/postTestWithForm"
+    )
+    public String postTestWithForm(
+             TestVo testVo
+    ){
+        return testVo.getTitle();
+    }
 }
