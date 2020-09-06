@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import seongju.remaapi.service.TestService;
+import seongju.remaapi.vo.TestVo;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/test")
@@ -17,7 +20,7 @@ public class TestController {
             value = "/getHostName",
             method = RequestMethod.GET
     )
-    private String getHostName(){
+    private List<TestVo> getHostName(){
         return this.testService.getHostName();
     }
 }
