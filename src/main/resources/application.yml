@@ -1,0 +1,23 @@
+spring:
+  profiles:
+    active: dev
+
+  datasource:
+    db:
+      driver-class-name: oracle.jdbc.OracleDriver
+      jdbc-url: jdbc:oracle:thin:@localhost:1521:xe
+      username: scott
+      password: tiger
+      type: com.zaxxer.hikari.HikariDataSource
+      hikari:
+        maximum-pool-size: 10
+        connection-test-query: SELECT 1 FROM SYS.DUAL
+        minimum-idle: 5
+        connection-timeout: 100000
+
+  devtools:
+    livereload:
+      enabled: true
+
+server:
+  port: 8080
