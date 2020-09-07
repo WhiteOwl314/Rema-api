@@ -22,7 +22,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: reviewmachinemail@gmail.com
-    password: WhiteOwl314!
+    password:
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
