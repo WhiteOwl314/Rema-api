@@ -3,6 +3,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="seongju.remaapi.dao.MemberDao">
+
+    <!-- 아이디 중복 검사 -->
     <select
             id="checkId"
             resultType="int"
@@ -14,7 +16,7 @@
         where id = #{id}
     </select>
 
-
+    <!-- 이메일 중복 검사 -->
     <select
             id="checkEmail"
             resultType="int"
@@ -25,4 +27,33 @@
         from member
         where email = #{email}
     </select>
+
+
+    <!-- 회원 가입 -->
+    <insert id="addMember" parameterType="memberVo">
+		<![CDATA[
+        insert into member(
+            id,
+            pw,
+            "LEVEL",
+            name,
+            email,
+            reg_date,
+            log_date,
+            approval_status,
+            approval_key
+        )
+        values(
+                  #{id},
+                  #{pw},
+               #{level},
+                  #{name},
+                  #{email},
+                  sysdate,
+                  sysdate,
+                  '0',
+                  #{approval_key}
+              )
+        ]]>
+	</insert>
 </mapper>
