@@ -13,4 +13,16 @@
         from member
         where id = #{id}
     </select>
+
+
+    <select
+            id="checkEmail"
+            resultType="int"
+            parameterType="string"
+    >
+        select
+            count(*)
+        from member
+        where email = #{email}
+    </select>
 </mapper>

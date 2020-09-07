@@ -28,4 +28,23 @@ public class MemberServiceImpl implements MemberService{
 
         return obj.toString();
     }
+
+    @Override
+    public String checkEmail(String email) {
+
+        boolean emailIsExisted ;
+
+        int emailCount = memberDao.checkEmail(email);
+
+        if(emailCount == 0){
+            emailIsExisted = false;
+        }else{
+            emailIsExisted = true;
+        }
+
+        JsonObject obj = new JsonObject();
+        obj.addProperty("emailIsExisted",emailIsExisted);
+
+        return obj.toString();
+    }
 }

@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface MemberDao {
     int checkId(String id);
+
+    int checkEmail(String email);
 }

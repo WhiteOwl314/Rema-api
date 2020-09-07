@@ -8,12 +8,12 @@ import seongju.remaapi.service.MemberService;
 import java.util.HashMap;
 
 @RestController
+@CrossOrigin("http://localhost:3000")
 @RequestMapping(value = "/member")
 public class MemberController {
     @Autowired
     private MemberService memberService;
 
-    @CrossOrigin("*")
     @RequestMapping(
             value = "/checkId.do",
             method = RequestMethod.POST
@@ -23,5 +23,17 @@ public class MemberController {
     ){
         String id = (String) map.get("id");
         return memberService.checkId(id);
+    }
+
+
+    @RequestMapping(
+            value = "/checkEmail.do",
+            method = RequestMethod.POST
+    )
+    public String checkEmail(
+            @RequestBody HashMap<String, Object> map
+    ){
+        String email = (String) map.get("email");
+        return memberService.checkEmail(email);
     }
 }
