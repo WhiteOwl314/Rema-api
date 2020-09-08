@@ -91,25 +91,43 @@ public class MemberServiceImpl implements MemberService{
         return key;
     }
 
+    //이메일 보내기
     @Override
-    public void sendEmail(MemberVo memberVo){
+    public void sendEmail(
+            MemberVo memberVo,
+            String kind
+    ) throws Exception{
 
         MimeMessage message = mailSender.createMimeMessage();
+        String htmlContent = "";
         try{
-            message.setSubject(
-                    "REMA 회원가입 인증메일입니다.",
-                    "UTF-8"
-            );
-            String htmlContent = "";
-            htmlContent += "<div align='center' style='border:1px solid black; font-family:verdana'>";
-            htmlContent += "<h3 style='color: blue;'>";
-            htmlContent += memberVo.getId() + "님 회원가입을 환영합니다.</h3>";
-            htmlContent += "<div style='font-size: 130%'>";
-            htmlContent += "하단의 인증 버튼 클릭 시 정상적으로 회원가입이 완료됩니다.</div><br/>";
-            htmlContent += "<form method='post' action='http://"+ Information.HOST_ADDRESS +"/member/approval_member.do'>";
-            htmlContent += "<input type='hidden' name='email' value='" + memberVo.getEmail() + "'>";
-            htmlContent += "<input type='hidden' name='approval_key' value='" + memberVo.getApproval_key() + "'>";
-            htmlContent += "<input type='submit' value='인증'></form><br/></div>";
+            if(kind.equals("addMember")){
+                message.setSubject(
+                        "REMA 회원가입 인증메일입니다.",
+                        "UTF-8"
+                );
+                htmlContent += "<div align='center' style='border:1px solid black; font-family:verdana'>";
+                htmlContent += "<h3 style='color: blue;'>";
+                htmlContent += memberVo.getId() + "님 회원가입을 환영합니다.</h3>";
+                htmlContent += "<div style='font-size: 130%'>";
+                htmlContent += "하단의 인증 버튼 클릭 시 정상적으로 회원가입이 완료됩니다.</div><br/>";
+                htmlContent += "<form method='post' action='http://"+ Information.HOST_ADDRESS +"/member/approval_member.do'>";
+                htmlContent += "<input type='hidden' name='email' value='" + memberVo.getEmail() + "'>";
+                htmlContent += "<input type='hidden' name='approval_key' value='" + memberVo.getApproval_key() + "'>";
+                htmlContent += "<input type='submit' value='인증'></form><br/></div>";
+
+            } else if (kind.equals("findPw")){
+                message.setSubject(
+                        "REMA 임시 비밀번호입니다.",
+                        "UTF-8"
+                );
+                htmlContent += "<div align='center' style='border:1px solid black; font-family:verdana'>";
+                htmlContent += "<h3 style='color: blue;'>";
+                htmlContent += memberVo.getId() + "님의 임시 비밀번호입니다. 비밀번호를 변경하여 사용하세요.</h3>";
+                htmlContent += "<p>임시 비밀번호: ";
+                htmlContent += memberVo.getPw() + "</p></div>";
+
+            }
 
             message.setText(
                     htmlContent,
@@ -125,17 +143,9 @@ public class MemberServiceImpl implements MemberService{
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-
-
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setTo(memberVo.getEmail());
-//        message.setFrom(FROM_ADDRESS);
-//        message.setSubject("REMA 회원가입 인증메일입니다.");
-//        message.setText("안녕하세요");
-//
-//        mailSender.send(message);
     }
 
+    //회원가입
     @Override
     public void addMember(
             MemberVo memberVo
@@ -143,9 +153,10 @@ public class MemberServiceImpl implements MemberService{
         memberVo.setApproval_key(create_key());
         memberDao.addMember(memberVo);
 
-        sendEmail(memberVo);
+        sendEmail(memberVo, "addMember");
     }
 
+    //이메일 인증
     @Override
     public void approval_member(
             MemberVo memberVo,
@@ -177,9 +188,9 @@ public class MemberServiceImpl implements MemberService{
     ) throws IOException {
 
         JsonObject bodyMessage = new JsonObject();
-        bodyMessage.addProperty("id", false);
-        bodyMessage.addProperty("pw",false);
-        bodyMessage.addProperty("email", false);
+        bodyMessage.addProperty("idIsExisted", false);
+        bodyMessage.addProperty("pwIsCorrect",false);
+        bodyMessage.addProperty("emailIsAllowed", false);
         bodyMessage.addProperty("info","[]");
 
         if(memberDao.checkId(memberVo.getId()) == 0){
@@ -190,19 +201,19 @@ public class MemberServiceImpl implements MemberService{
 
             //비밀번호가 다를 경우
             if(!memberVo.getPw().equals(pw)){
-                bodyMessage.addProperty("id", true);
+                bodyMessage.addProperty("idExisted", true);
                 return bodyMessage;
             } else if (!memberVo.getApproval_status().equals("1")){
                 //이메일 인증이 필요한 경우
-                bodyMessage.addProperty("id", true);
-                bodyMessage.addProperty("pw",true);
+                bodyMessage.addProperty("idIsExisted", true);
+                bodyMessage.addProperty("pwIsCorrect",true);
                 return bodyMessage;
             } else {
                 //로그인 일자 업데이트 및 회원정보 리턴
                 memberDao.update_log(memberVo.getId());
-                bodyMessage.addProperty("id", true);
-                bodyMessage.addProperty("pw",true);
-                bodyMessage.addProperty("email", true);
+                bodyMessage.addProperty("idIsExisted", true);
+                bodyMessage.addProperty("pwIsCorrect",true);
+                bodyMessage.addProperty("emailIsAllowed", true);
 
                 JsonArray memberVoJsonContainer = new JsonArray();
                 JsonObject memberVoJson = new JsonObject();
@@ -229,7 +240,71 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public String findId(String email) {
-        return memberDao.findId(email);
+    public JsonObject findId(String email) {
+
+        JsonObject bodyMessage = new JsonObject();
+        bodyMessage.addProperty("idIsExisted", false);
+        bodyMessage.addProperty("id","");
+
+        String id = memberDao.findId(email);
+
+        if (id == null){
+            return bodyMessage;
+        } else {
+            bodyMessage.addProperty("idIsExisted", true);
+            bodyMessage.addProperty("id",id);
+            return bodyMessage;
+        }
+    }
+
+    @Override
+    public JsonObject findPw(
+            String id,
+            String email
+    ) throws Exception {
+        JsonObject bodyMessage = new JsonObject();
+        bodyMessage.addProperty("idIsExisted", false);
+        bodyMessage.addProperty("emailIsCorrect", false);
+        bodyMessage.addProperty("sendEmail",false);
+        bodyMessage.addProperty("info","[]");
+
+        if(memberDao.checkId(id) == 0){
+            return bodyMessage;
+        } else if(
+                !email.equals(memberDao.login(id).getEmail())
+        ){
+            bodyMessage.addProperty("idIsExisted", true);
+            return bodyMessage;
+        } else {
+            //임시 비밀번호 생성
+            String pw = "";
+            for (int i = 0; i < 12; i++) {
+                pw += (char) ((Math.random() * 26) + 97);
+            }
+            MemberVo memberVo = new MemberVo();
+            memberVo.setId(id);
+            memberVo.setPw(pw);
+            memberVo.setEmail(email);
+
+            //비밀번호 변경
+            memberDao.updatePw(memberVo);
+            //비밀번호 변경 메일 발송
+            sendEmail(memberVo, "findPw");
+
+            bodyMessage.addProperty("idIsExisted", true);
+            bodyMessage.addProperty("emailIsCorrect", true);
+            bodyMessage.addProperty("sendEmail",true);
+
+            JsonArray memberVoJsonContainer = new JsonArray();
+            JsonObject memberVoJson = new JsonObject();
+            memberVoJson.addProperty("id",memberVo.getId());
+            memberVoJson.addProperty("email",memberVo.getEmail());
+
+            memberVoJsonContainer.add(memberVoJson);
+
+            bodyMessage.add("info",memberVoJsonContainer);
+
+            return bodyMessage;
+        }
     }
 }

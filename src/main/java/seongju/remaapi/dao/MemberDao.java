@@ -20,4 +20,6 @@ public interface MemberDao {
     void update_log(String id);
 
     String findId(String email);
+
+    void updatePw(MemberVo memberVo);
 }

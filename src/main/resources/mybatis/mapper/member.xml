@@ -93,6 +93,7 @@
     </update>
 
 
+    <!-- 아이디 찾기 -->
     <select
             id="findId"
             resultType="String"
@@ -103,4 +104,12 @@
         from member
         where EMAIL = #{email}
     </select>
+
+    <!-- 비밀번호 변경 -->
+    <update id="updatePw" parameterType="memberVo">
+        update member
+        set PW = #{pw}
+        where ID = #{id}
+    </update>
+
 </mapper>

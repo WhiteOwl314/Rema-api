@@ -99,10 +99,21 @@ public class MemberController {
     public ResponseEntity<?> findId(
             @RequestParam("email") String email
     ) throws Exception{
-        String id = memberService.findId(email);
+        JsonObject bodyMessage = memberService.findId(email);
 
-        JsonObject bodyMessage = new JsonObject();
-        bodyMessage.addProperty("id", id);
+        return ResponseEntity.ok().body(bodyMessage.toString());
+    }
+
+    @RequestMapping(
+            value = "/findPw.do",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<?> findPw(
+            @RequestParam("id") String id,
+            @RequestParam("email") String email
+    ) throws Exception{
+        JsonObject bodyMessage =
+                memberService.findPw(id,email);
 
         return ResponseEntity.ok().body(bodyMessage.toString());
     }

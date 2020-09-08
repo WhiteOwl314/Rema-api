@@ -16,7 +16,11 @@ public interface MemberService {
 
     String create_key() throws Exception;
 
-    void sendEmail(MemberVo memberVo);
+    //이메일 보내기
+    void sendEmail(
+            MemberVo memberVo,
+            String kind
+    ) throws Exception;
 
     void addMember(MemberVo memberVo) throws Exception;
 
@@ -27,5 +31,7 @@ public interface MemberService {
             HttpServletRequest request
     ) throws IOException;
 
-    String findId(String email);
+    JsonObject findId(String email);
+
+    JsonObject findPw(String id, String email) throws Exception;
 }
