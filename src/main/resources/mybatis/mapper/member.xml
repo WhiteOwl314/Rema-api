@@ -48,8 +48,8 @@
                #{level},
                   #{name},
                   #{email},
-                  sysdate,
-                  sysdate,
+                  SYSDATE,
+                  SYSDATE,
                   '0',
                   #{approval_key}
               )
@@ -88,7 +88,7 @@
     <!-- 로그인 일자 변경 -->
     <update id="update_log" parameterType="String">
         update member
-        set LOG_DATE = sysdate
+        set LOG_DATE = SYSDATE
         where ID = #{id}
     </update>
 
