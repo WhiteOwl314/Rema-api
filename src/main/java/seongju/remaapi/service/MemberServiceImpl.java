@@ -2,7 +2,6 @@ package seongju.remaapi.service;
 
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import seongju.remaapi.dao.MemberDao;
@@ -19,7 +18,9 @@ public class MemberServiceImpl implements MemberService{
     private MemberDao memberDao;
     @Autowired
     private JavaMailSender mailSender;
+
     private static final String FROM_ADDRESS = "reviewmachinemail@gmail.com";
+    private static final String HOST_ADDRESS = "localhost";
 
     @Override
     public String checkId(String id) {
@@ -80,8 +81,17 @@ public class MemberServiceImpl implements MemberService{
                     "REMA 회원가입 인증메일입니다.",
                     "UTF-8"
             );
-            String htmlContent =
-                    "<strong>안녕하세요</strong>, 반갑습니다.";
+            String htmlContent = "";
+            htmlContent += "<div align='center' style='border:1px solid black; font-family:verdana'>";
+            htmlContent += "<h3 style='color: blue;'>";
+            htmlContent += memberVo.getId() + "님 회원가입을 환영합니다.</h3>";
+            htmlContent += "<div style='font-size: 130%'>";
+            htmlContent += "하단의 인증 버튼 클릭 시 정상적으로 회원가입이 완료됩니다.</div><br/>";
+            htmlContent += "<form method='post' action='http://"+ HOST_ADDRESS +":8080/member/approval_member.do'>";
+            htmlContent += "<input type='hidden' name='email' value='" + memberVo.getEmail() + "'>";
+            htmlContent += "<input type='hidden' name='approval_key' value='" + memberVo.getApproval_key() + "'>";
+            htmlContent += "<input type='submit' value='인증'></form><br/></div>";
+
             message.setText(
                     htmlContent,
                     "UTF-8",
