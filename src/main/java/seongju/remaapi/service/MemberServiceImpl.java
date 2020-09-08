@@ -4,12 +4,15 @@ import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import seongju.remaapi.config.Information;
 import seongju.remaapi.dao.MemberDao;
 import seongju.remaapi.vo.MemberVo;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import java.util.Random;
 
 @Service
@@ -18,9 +21,6 @@ public class MemberServiceImpl implements MemberService{
     private MemberDao memberDao;
     @Autowired
     private JavaMailSender mailSender;
-
-    private static final String FROM_ADDRESS = "reviewmachinemail@gmail.com";
-    private static final String HOST_ADDRESS = "localhost";
 
     @Override
     public String checkId(String id) {
@@ -87,7 +87,7 @@ public class MemberServiceImpl implements MemberService{
             htmlContent += memberVo.getId() + "님 회원가입을 환영합니다.</h3>";
             htmlContent += "<div style='font-size: 130%'>";
             htmlContent += "하단의 인증 버튼 클릭 시 정상적으로 회원가입이 완료됩니다.</div><br/>";
-            htmlContent += "<form method='post' action='http://"+ HOST_ADDRESS +":8080/member/approval_member.do'>";
+            htmlContent += "<form method='post' action='http://"+ Information.HOST_ADDRESS +"/member/approval_member.do'>";
             htmlContent += "<input type='hidden' name='email' value='" + memberVo.getEmail() + "'>";
             htmlContent += "<input type='hidden' name='approval_key' value='" + memberVo.getApproval_key() + "'>";
             htmlContent += "<input type='submit' value='인증'></form><br/></div>";
@@ -97,7 +97,7 @@ public class MemberServiceImpl implements MemberService{
                     "UTF-8",
                     "html"
             );
-            message.setFrom(new InternetAddress(FROM_ADDRESS));
+            message.setFrom(new InternetAddress(Information.FROM_ADDRESS));
             message.addRecipient(
                     MimeMessage.RecipientType.TO,
                     new InternetAddress(memberVo.getEmail()));
@@ -125,5 +125,29 @@ public class MemberServiceImpl implements MemberService{
         memberDao.addMember(memberVo);
 
         sendEmail(memberVo);
+    }
+
+    @Override
+    public void approval_member(
+            MemberVo memberVo,
+            HttpServletResponse response
+    ) throws Exception {
+        response.setContentType("text/html;charset=utf-8");
+        PrintWriter out = response.getWriter();
+        if (memberDao.approval_member(memberVo) == 0) {
+            // 이메일 인증에 실패하였을 경우
+            out.println("<script>");
+            out.println("alert('잘못된 접근입니다.');");
+            out.println("history.go(-1);");
+            out.println("</script>");
+            out.close();
+        } else {
+            // 이메일 인증을 성공하였을 경우
+            out.println("<script>");
+            out.println("alert('인증이 완료되었습니다. 로그인 후 이용하세요.');");
+            out.println("location.href='"+ Information.FRONT_ADDRESS +"';");
+            out.println("</script>");
+            out.close();
+        }
     }
 }

@@ -28,7 +28,6 @@
         where email = #{email}
     </select>
 
-
     <!-- 회원 가입 -->
     <insert id="addMember" parameterType="memberVo">
 		<![CDATA[
@@ -56,4 +55,13 @@
               )
         ]]>
 	</insert>
+
+
+    <!-- 이메일 인증 -->
+    <update id="approval_member" parameterType="memberVO">
+        update member
+        set approval_status = '1'
+        where email = #{email} and approval_key = #{approval_key}
+    </update>
+
 </mapper>

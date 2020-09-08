@@ -37,7 +37,7 @@ public class TestController {
     public void sendEmail (){
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo("parksj914@naver.com");
+        message.setTo("");
         message.setFrom(FROM_ADDRESS);
         message.setSubject("테스트 이메일");
         message.setText("안녕하세요");

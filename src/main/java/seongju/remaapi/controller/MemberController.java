@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import seongju.remaapi.service.MemberService;
 import seongju.remaapi.vo.MemberVo;
 
+import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ public class MemberController {
         return memberService.checkEmail(email);
     }
 
+    @CrossOrigin("*")
     @RequestMapping(
             value = "/addMember.do",
             method = RequestMethod.POST
@@ -54,4 +56,17 @@ public class MemberController {
 
         return ResponseEntity.created(new URI(url)).body("{}");
     }
+
+    @CrossOrigin("*")
+    @RequestMapping(
+            value = "/approval_member.do",
+            method = RequestMethod.POST
+    )
+    public void approval_member(
+            MemberVo memberVo,
+            HttpServletResponse response
+    ) throws Exception{
+        memberService.approval_member(memberVo, response);
+    }
+
 }

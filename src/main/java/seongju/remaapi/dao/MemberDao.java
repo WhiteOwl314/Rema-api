@@ -12,4 +12,6 @@ public interface MemberDao {
     int checkEmail(String email);
 
     void addMember(MemberVo memberVo);
+
+    int approval_member(MemberVo memberVo);
 }
