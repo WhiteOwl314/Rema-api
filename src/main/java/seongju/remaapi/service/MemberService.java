@@ -34,4 +34,10 @@ public interface MemberService {
     JsonObject findId(String email);
 
     JsonObject findPw(String id, String email) throws Exception;
+
+    JsonObject updatePw(
+            MemberVo memberVo,
+            String oldPw,
+            HttpServletRequest request
+    )throws Exception;
 }

@@ -307,4 +307,50 @@ public class MemberServiceImpl implements MemberService{
             return bodyMessage;
         }
     }
+
+    @Override
+    public JsonObject updatePw(
+            MemberVo memberVo,
+            String oldPw,
+            HttpServletRequest request
+    )throws Exception {
+
+        JsonObject bodyMessage = new JsonObject();
+        bodyMessage.addProperty("pwIsCorrect", false);
+        bodyMessage.addProperty("info","[]");
+
+        //옛 비밀번호가 다르다면
+        if(
+                !oldPw.equals(memberDao.login(
+                        memberVo.getId()).getPw())
+        ){
+            return bodyMessage;
+        } else {
+            memberDao.updatePw(memberVo);
+            memberVo = memberDao.login(memberVo.getId());
+
+            bodyMessage.addProperty("pwIsCorrect", true);
+            bodyMessage.addProperty("info","[]");
+
+            JsonArray memberVoJsonContainer = new JsonArray();
+            JsonObject memberVoJson = new JsonObject();
+            memberVoJson.addProperty("id",memberVo.getId());
+            memberVoJson.addProperty("level",memberVo.getLevel());
+            memberVoJson.addProperty("name",memberVo.getName());
+            memberVoJson.addProperty("email",memberVo.getEmail());
+            memberVoJson.addProperty("isDeleted",memberVo.getIsDeleted());
+            memberVoJson.addProperty("log_data",memberVo.getLog_date());
+            memberVoJson.addProperty("reg_date",memberVo.getReg_date());
+            memberVoJson.addProperty("approval_status",memberVo.getApproval_status());
+            memberVoJsonContainer.add(memberVoJson);
+
+            bodyMessage.add("info",memberVoJsonContainer);
+
+            //세션 업데이트
+            HttpSession session = request.getSession();
+            session.setAttribute("member", memberVo);
+
+            return bodyMessage;
+        }
+    }
 }

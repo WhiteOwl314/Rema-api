@@ -118,5 +118,25 @@ public class MemberController {
         return ResponseEntity.ok().body(bodyMessage.toString());
     }
 
+    @RequestMapping(
+            value = "/updatePw.do",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<?> updatePw(
+            MemberVo memberVo,
+            @RequestParam("oldPw") String oldPw,
+            HttpServletRequest request
+    ) throws Exception{
+        HttpSession session = request.getSession();
+        MemberVo sessionMember = (MemberVo)session.getAttribute("member");
+        String id = sessionMember.getId();
+        memberVo.setId(id);
+        JsonObject bodyMessage =
+                memberService.updatePw(
+                        memberVo, oldPw, request);
+
+        return ResponseEntity.ok().body(bodyMessage.toString());
+    }
+
 }
 
