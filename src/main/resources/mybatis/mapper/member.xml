@@ -64,4 +64,32 @@
         where email = #{email} and approval_key = #{approval_key}
     </update>
 
+    <!-- 로그인 -->
+    <select
+            id="login"
+            parameterType="String"
+            resultType="MemberVo"
+    >
+        SELECT
+               id,
+               pw,
+               name,
+               email,
+               "LEVEL",
+               isdeleted,
+               reg_date,
+               log_date,
+               approval_status,
+               approval_key
+        FROM MEMBER
+        WHERE ID = #{id}
+    </select>
+
+    <!-- 로그인 일자 변경 -->
+    <update id="update_log" parameterType="String">
+        update member
+        set LOG_DATE = sysdate
+        where ID = #{id}
+    </update>
+
 </mapper>

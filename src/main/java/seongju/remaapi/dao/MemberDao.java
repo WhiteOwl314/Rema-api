@@ -14,4 +14,8 @@ public interface MemberDao {
     void addMember(MemberVo memberVo);
 
     int approval_member(MemberVo memberVo);
+
+    MemberVo login(String id);
+
+    void update_log(String id);
 }

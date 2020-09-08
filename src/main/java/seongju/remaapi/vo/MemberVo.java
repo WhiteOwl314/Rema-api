@@ -12,7 +12,8 @@ public class MemberVo {
     private String name;
     private String email;
     private String isDeleted;
-    private String log_data;
+    private String log_date;
     private String approval_status;
     private String approval_key;
+    private String reg_date;
 }
