@@ -227,4 +227,9 @@ public class MemberServiceImpl implements MemberService{
             }
         }
     }
+
+    @Override
+    public String findId(String email) {
+        return memberDao.findId(email);
+    }
 }

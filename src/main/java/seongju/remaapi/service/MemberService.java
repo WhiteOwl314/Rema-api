@@ -26,4 +26,6 @@ public interface MemberService {
             MemberVo memberVo,
             HttpServletRequest request
     ) throws IOException;
+
+    String findId(String email);
 }

@@ -18,4 +18,6 @@ public interface MemberDao {
     MemberVo login(String id);
 
     void update_log(String id);
+
+    String findId(String email);
 }

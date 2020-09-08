@@ -92,4 +92,15 @@
         where ID = #{id}
     </update>
 
+
+    <select
+            id="findId"
+            resultType="String"
+            parameterType="string"
+    >
+        select
+            id
+        from member
+        where EMAIL = #{email}
+    </select>
 </mapper>

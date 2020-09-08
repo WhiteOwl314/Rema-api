@@ -18,7 +18,8 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 
 @RestController
-@CrossOrigin("http://localhost:3000")
+//@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
 @RequestMapping(value = "/member")
 public class MemberController {
     @Autowired
@@ -64,7 +65,7 @@ public class MemberController {
 
     @CrossOrigin("*")
     @RequestMapping(
-            value = "/approval_member.do",
+            value = "/approvalMember.do",
             method = RequestMethod.POST
     )
     public void approval_member(
@@ -90,5 +91,21 @@ public class MemberController {
 
         return ResponseEntity.ok().body(bodyMessage.toString());
     }
+
+    @RequestMapping(
+            value = "/findId.do",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<?> findId(
+            @RequestParam("email") String email
+    ) throws Exception{
+        String id = memberService.findId(email);
+
+        JsonObject bodyMessage = new JsonObject();
+        bodyMessage.addProperty("id", id);
+
+        return ResponseEntity.ok().body(bodyMessage.toString());
+    }
+
 }
 
