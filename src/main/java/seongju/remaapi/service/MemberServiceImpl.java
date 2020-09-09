@@ -9,7 +9,6 @@ import seongju.remaapi.config.Information;
 import seongju.remaapi.dao.MemberDao;
 import seongju.remaapi.vo.MemberVo;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
@@ -100,7 +99,7 @@ public class MemberServiceImpl implements MemberService{
 
         MimeMessage message = mailSender.createMimeMessage();
         String htmlContent = "";
-        try{
+
             if(kind.equals("addMember")){
                 message.setSubject(
                         "REMA 회원가입 인증메일입니다.",
@@ -111,7 +110,7 @@ public class MemberServiceImpl implements MemberService{
                 htmlContent += memberVo.getId() + "님 회원가입을 환영합니다.</h3>";
                 htmlContent += "<div style='font-size: 130%'>";
                 htmlContent += "하단의 인증 버튼 클릭 시 정상적으로 회원가입이 완료됩니다.</div><br/>";
-                htmlContent += "<form method='post' action='http://"+ Information.HOST_ADDRESS +"/member/approval_member.do'>";
+                htmlContent += "<form method='post' action='http://"+ Information.HOST_ADDRESS +"/member/approvalMember.do'>";
                 htmlContent += "<input type='hidden' name='email' value='" + memberVo.getEmail() + "'>";
                 htmlContent += "<input type='hidden' name='approval_key' value='" + memberVo.getApproval_key() + "'>";
                 htmlContent += "<input type='submit' value='인증'></form><br/></div>";
@@ -140,20 +139,38 @@ public class MemberServiceImpl implements MemberService{
                     new InternetAddress(memberVo.getEmail()));
             mailSender.send(message);
 
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
     }
 
     //회원가입
     @Override
-    public void addMember(
+    public JsonObject addMember(
             MemberVo memberVo
     ) throws Exception {
-        memberVo.setApproval_key(create_key());
-        memberDao.addMember(memberVo);
+        JsonObject bodyMessage = new JsonObject();
+        bodyMessage.addProperty("addMemberToDb", false);
+        bodyMessage.addProperty("sentEmail",false);
+        bodyMessage.addProperty("info","[]");
 
-        sendEmail(memberVo, "addMember");
+        memberVo.setApproval_key(create_key());
+        try{
+            memberDao.addMember(memberVo);
+        } catch (Exception e){
+            e.printStackTrace();
+            return bodyMessage;
+
+        }
+        try{
+            sendEmail(memberVo, "addMember");
+        } catch (Exception e) {
+            e.printStackTrace();
+            bodyMessage.addProperty("addMemberToDb", true);
+            return bodyMessage;
+        }
+
+        bodyMessage.addProperty("addMemberToDb", true);
+        bodyMessage.addProperty("sentEmail",true);
+
+        return bodyMessage;
     }
 
     //이메일 인증
@@ -175,7 +192,7 @@ public class MemberServiceImpl implements MemberService{
             // 이메일 인증을 성공하였을 경우
             out.println("<script>");
             out.println("alert('인증이 완료되었습니다. 로그인 후 이용하세요.');");
-            out.println("location.href='"+ Information.FRONT_ADDRESS +"';");
+            out.println("location.href='http://"+ Information.FRONT_ADDRESS +"/member/login';");
             out.println("</script>");
             out.close();
         }

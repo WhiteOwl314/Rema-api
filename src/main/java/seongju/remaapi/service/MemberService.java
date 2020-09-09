@@ -22,7 +22,7 @@ public interface MemberService {
             String kind
     ) throws Exception;
 
-    void addMember(MemberVo memberVo) throws Exception;
+    JsonObject addMember(MemberVo memberVo) throws Exception;
 
     void approval_member(MemberVo memberVo, HttpServletResponse response) throws Exception;
 

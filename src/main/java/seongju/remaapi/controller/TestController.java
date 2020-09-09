@@ -60,7 +60,7 @@ public class TestController {
     public String postTestWithBody(
             @RequestBody TestVo testVo
     ){
-        return "success";
+        return testVo.getTitle();
     }
 
 

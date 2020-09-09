@@ -2,8 +2,6 @@ package seongju.remaapi.controller;
 
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import seongju.remaapi.service.MemberService;
@@ -12,9 +10,7 @@ import seongju.remaapi.vo.MemberVo;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.lang.reflect.Member;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 
 @RestController
@@ -30,6 +26,7 @@ public class MemberController {
             method = RequestMethod.POST
     )
     public String checkId(
+            //필요: id
             @RequestBody HashMap<String, Object> map
     ){
         String id = (String) map.get("id");
@@ -42,6 +39,7 @@ public class MemberController {
             method = RequestMethod.POST
     )
     public String checkEmail(
+            //필요: email
             @RequestBody HashMap<String, Object> map
     ){
         String email = (String) map.get("email");
@@ -54,13 +52,17 @@ public class MemberController {
             method = RequestMethod.POST
     )
     public ResponseEntity<?> addMember(
-            MemberVo memberVo
+            // 필요: id, pw, level, name, email
+            @RequestBody MemberVo memberVo
     ) throws Exception {
-        memberService.addMember(memberVo);
+
+        JsonObject bodyMessage =
+                memberService.addMember(memberVo);
 
         String url = "/member/members/" + memberVo.getId();
 
-        return ResponseEntity.created(new URI(url)).body("{}");
+        return ResponseEntity.created(new URI(url))
+                .body(bodyMessage.toString());
     }
 
     @CrossOrigin("*")
