@@ -83,7 +83,7 @@ public class MemberController {
             method = RequestMethod.POST
     )
     public ResponseEntity<?> login(
-            MemberVo memberVo,
+            @RequestBody MemberVo memberVo,
             HttpServletRequest request
     ) throws Exception{
         request.setCharacterEncoding("utf-8");

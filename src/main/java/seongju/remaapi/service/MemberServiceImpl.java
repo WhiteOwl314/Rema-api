@@ -184,7 +184,7 @@ public class MemberServiceImpl implements MemberService{
         if (memberDao.approval_member(memberVo) == 0) {
             // 이메일 인증에 실패하였을 경우
             out.println("<script>");
-            out.println("alert('잘못된 접근입니다.');");
+            out.println("alert('실패했습니다. 다시 시도해주세요.');");
             out.println("history.go(-1);");
             out.println("</script>");
             out.close();
