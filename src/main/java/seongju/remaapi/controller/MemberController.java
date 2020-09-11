@@ -83,6 +83,7 @@ public class MemberController {
             method = RequestMethod.POST
     )
     public ResponseEntity<?> login(
+            //필요: id, pw
             @RequestBody MemberVo memberVo,
             HttpServletRequest request
     ) throws Exception{

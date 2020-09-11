@@ -208,6 +208,7 @@ public class MemberServiceImpl implements MemberService{
         bodyMessage.addProperty("idIsExisted", false);
         bodyMessage.addProperty("pwIsCorrect",false);
         bodyMessage.addProperty("emailIsAllowed", false);
+        bodyMessage.addProperty("isLogOn",false);
         bodyMessage.addProperty("info","[]");
 
         if(memberDao.checkId(memberVo.getId()) == 0){
@@ -218,7 +219,7 @@ public class MemberServiceImpl implements MemberService{
 
             //비밀번호가 다를 경우
             if(!memberVo.getPw().equals(pw)){
-                bodyMessage.addProperty("idExisted", true);
+                bodyMessage.addProperty("idIsExisted", true);
                 return bodyMessage;
             } else if (!memberVo.getApproval_status().equals("1")){
                 //이메일 인증이 필요한 경우
@@ -250,6 +251,7 @@ public class MemberServiceImpl implements MemberService{
                 HttpSession session = request.getSession();
                 session.setAttribute("member",memberVo);
                 session.setAttribute("isLogOn", true);
+                bodyMessage.addProperty("isLogOn",true);
 
                 return bodyMessage;
             }
