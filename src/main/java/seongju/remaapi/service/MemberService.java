@@ -40,4 +40,6 @@ public interface MemberService {
             String oldPw,
             HttpServletRequest request
     )throws Exception;
+
+    JsonObject loginCheck(HttpServletRequest request);
 }

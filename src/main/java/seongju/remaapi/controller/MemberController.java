@@ -100,21 +100,28 @@ public class MemberController {
             method = RequestMethod.POST
     )
     public ResponseEntity<?> findId(
-            @RequestParam("email") String email
+            //필요: email
+            @RequestBody MemberVo memberVo
     ) throws Exception{
-        JsonObject bodyMessage = memberService.findId(email);
+
+        JsonObject bodyMessage =
+                memberService.findId(memberVo.getEmail());
 
         return ResponseEntity.ok().body(bodyMessage.toString());
     }
 
+    @CrossOrigin("*")
     @RequestMapping(
             value = "/findPw.do",
             method = RequestMethod.POST
     )
     public ResponseEntity<?> findPw(
-            @RequestParam("id") String id,
-            @RequestParam("email") String email
+            //필요: id,email
+            @RequestBody MemberVo memberVo
     ) throws Exception{
+
+        String id = memberVo.getId();
+        String email = memberVo.getEmail();
         JsonObject bodyMessage =
                 memberService.findPw(id,email);
 
@@ -127,7 +134,8 @@ public class MemberController {
     )
     public ResponseEntity<?> updatePw(
             MemberVo memberVo,
-            @RequestParam("oldPw") String oldPw,
+            //필요: oldPw, pw,
+            @RequestBody HashMap<String, Object> map,
             HttpServletRequest request
     ) throws Exception{
         HttpSession session = request.getSession();
@@ -136,10 +144,25 @@ public class MemberController {
         memberVo.setId(id);
         JsonObject bodyMessage =
                 memberService.updatePw(
-                        memberVo, oldPw, request);
+                        memberVo, (String)map.get("oldPw"), request);
 
         return ResponseEntity.ok().body(bodyMessage.toString());
     }
 
+    @CrossOrigin("*")
+    @RequestMapping(
+            value = "/loginCheck.do",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<?> loginCheck(
+            HttpServletRequest request
+    ) throws Exception{
+        request.setCharacterEncoding("utf-8");
+
+        JsonObject bodyMessage =
+                memberService.loginCheck(request);
+
+        return ResponseEntity.ok().body(bodyMessage.toString());
+    }
 }
 

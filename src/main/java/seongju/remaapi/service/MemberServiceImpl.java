@@ -284,7 +284,7 @@ public class MemberServiceImpl implements MemberService{
         JsonObject bodyMessage = new JsonObject();
         bodyMessage.addProperty("idIsExisted", false);
         bodyMessage.addProperty("emailIsCorrect", false);
-        bodyMessage.addProperty("sendEmail",false);
+        bodyMessage.addProperty("sentEmail",false);
         bodyMessage.addProperty("info","[]");
 
         if(memberDao.checkId(id) == 0){
@@ -312,7 +312,7 @@ public class MemberServiceImpl implements MemberService{
 
             bodyMessage.addProperty("idIsExisted", true);
             bodyMessage.addProperty("emailIsCorrect", true);
-            bodyMessage.addProperty("sendEmail",true);
+            bodyMessage.addProperty("sentEmail",true);
 
             JsonArray memberVoJsonContainer = new JsonArray();
             JsonObject memberVoJson = new JsonObject();
@@ -370,6 +370,65 @@ public class MemberServiceImpl implements MemberService{
             session.setAttribute("member", memberVo);
 
             return bodyMessage;
+        }
+    }
+
+    @Override
+    public JsonObject loginCheck(
+            HttpServletRequest request
+    ) {
+        JsonObject bodyMessage = new JsonObject();
+        bodyMessage.addProperty("idIsExisted", false);
+        bodyMessage.addProperty("pwIsCorrect", false);
+        bodyMessage.addProperty("isLogOn", false);
+        bodyMessage.addProperty("info", "[]");
+
+        HttpSession session ;
+        MemberVo memberVo;
+
+        try{
+            session = request.getSession();
+            memberVo = (MemberVo) session.getAttribute("member");
+        } catch (Exception e){
+            return bodyMessage;
+        }
+
+
+        if (memberDao.checkId(memberVo.getId()) == 0) {
+            return bodyMessage;
+        } else {
+            String pw = memberVo.getPw();
+            memberVo = memberDao.login(memberVo.getId());
+
+            //비밀번호가 다를 경우
+            if (!memberVo.getPw().equals(pw)) {
+                bodyMessage.addProperty("idIsExisted", true);
+                return bodyMessage;
+            } else {
+                //회원정보 리턴
+                bodyMessage.addProperty("idIsExisted", true);
+                bodyMessage.addProperty("pwIsCorrect", true);
+
+                JsonArray memberVoJsonContainer = new JsonArray();
+                JsonObject memberVoJson = new JsonObject();
+                memberVoJson.addProperty("id", memberVo.getId());
+                memberVoJson.addProperty("level", memberVo.getLevel());
+                memberVoJson.addProperty("name", memberVo.getName());
+                memberVoJson.addProperty("email", memberVo.getEmail());
+                memberVoJson.addProperty("isDeleted", memberVo.getIsDeleted());
+                memberVoJson.addProperty("log_data", memberVo.getLog_date());
+                memberVoJson.addProperty("reg_date", memberVo.getReg_date());
+                memberVoJson.addProperty("approval_status", memberVo.getApproval_status());
+
+                memberVoJsonContainer.add(memberVoJson);
+
+                bodyMessage.add("info", memberVoJsonContainer);
+
+                session.setAttribute("isLogOn", true);
+                bodyMessage.addProperty("isLogOn", true);
+
+                return bodyMessage;
+            }
         }
     }
 }
