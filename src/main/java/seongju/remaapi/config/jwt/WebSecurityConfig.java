@@ -59,18 +59,25 @@ public class WebSecurityConfig
         );
         //We don't need CSRF for this example
         httpSecurity.csrf().disable()
+                //특정 경로 -> 특정 사용자 통제
                 .authorizeRequests()
-                .antMatchers("/authenticate")
-                .permitAll()
+                    //경로
+                    .antMatchers("/authenticate")
+                        //모두 허용
+                        .permitAll()
                 .anyRequest()
-                .authenticated()
-                .and()
+                    .authenticated()
+                    .and()
+                //예외 처리 -> 401페이지
                 .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .and()
+                    .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                    .and()
+                //세션 정책
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    //스프링시큐리티가 생성하지도않고 기존것을 사용하지도 않음 ->JWT 같은 토큰방식을 쓸때 사용하는 설정
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        //필터 추가
         httpSecurity.addFilterBefore(
                 jwtRequestFilter,
                 UsernamePasswordAuthenticationFilter.class

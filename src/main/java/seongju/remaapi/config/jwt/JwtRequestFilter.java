@@ -32,12 +32,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             FilterChain chain
     ) throws ServletException, IOException {
 
+        //request 헤더의 Authorization 가져오기
         final String requestTokenHeader =
                 request.getHeader("Authorization");
 
         String username = null;
         String jwtToken = null;
 
+        //토큰, username 가져오기
         //JWT Token is in the form "Bearer token". RemoveBearer word and get
         //only the Token
         if(
@@ -46,6 +48,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         ){
             jwtToken = requestTokenHeader.substring(7);
             try{
+                //username 가져오기
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e){
                 System.out.println("Unable to get JWT Token");
@@ -56,6 +59,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             logger.warn("JWT Token does not begin with Bearer String");
         }
 
+        //토큰 검사
         //Once we get the token validate it.
         if(
                 username != null

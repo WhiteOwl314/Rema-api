@@ -40,6 +40,8 @@ public class JwtAuthenticationController {
                 authenticationRequest.getPassword()
         );
 
+        //인증 성공하면
+
         //User 정보 가져오기
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
