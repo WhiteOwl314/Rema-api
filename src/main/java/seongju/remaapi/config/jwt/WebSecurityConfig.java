@@ -69,9 +69,9 @@ public class WebSecurityConfig
                     .authenticated()
                     .and()
                 //예외 처리 -> 401페이지
-                .exceptionHandling()
-                    .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                    .and()
+//                .exceptionHandling()
+//                    .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+//                    .and()
                 //세션 정책
                 .sessionManagement()
                     //스프링시큐리티가 생성하지도않고 기존것을 사용하지도 않음 ->JWT 같은 토큰방식을 쓸때 사용하는 설정

@@ -2,9 +2,11 @@ package seongju.remaapi.vo;
 
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
+import org.springframework.stereotype.Component;
 
 @Data
 @Alias("memberVo")
+@Component
 public class MemberVo {
     private String id;
     private String pw;
