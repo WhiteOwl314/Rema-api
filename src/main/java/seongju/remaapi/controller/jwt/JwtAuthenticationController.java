@@ -1,5 +1,6 @@
 package seongju.remaapi.controller.jwt;
 
+import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -102,7 +103,10 @@ public class JwtAuthenticationController {
             method = RequestMethod.POST
     )
     public ResponseEntity<?> loginCheck(){
-        return ResponseEntity.ok().body("{login:true}");
+
+        JsonObject bodyMessage = new JsonObject();
+        bodyMessage.addProperty("login", true);
+        return ResponseEntity.ok().body(bodyMessage.toString());
     }
 
 
