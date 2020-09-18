@@ -97,6 +97,13 @@ public class JwtAuthenticationController {
         }
     }
 
+    @RequestMapping(
+            value = "/loginCheck",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<?> loginCheck(){
+        return ResponseEntity.ok().body("{login:true}");
+    }
 
 
 }

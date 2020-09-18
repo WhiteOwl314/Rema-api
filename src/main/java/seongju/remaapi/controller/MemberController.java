@@ -1,15 +1,17 @@
 package seongju.remaapi.controller;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import seongju.remaapi.config.jwt.JwtTokenUtil;
 import seongju.remaapi.service.MemberService;
 import seongju.remaapi.vo.MemberVo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.HashMap;
 
@@ -20,6 +22,9 @@ import java.util.HashMap;
 public class MemberController {
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @RequestMapping(
             value = "/checkId.do",
@@ -133,18 +138,64 @@ public class MemberController {
             method = RequestMethod.POST
     )
     public ResponseEntity<?> updatePw(
-            MemberVo memberVo,
-            //필요: oldPw, pw,
-            @RequestBody HashMap<String, Object> map,
+            //필요: pw,
+            @RequestBody MemberVo memberVo,
             HttpServletRequest request
     ) throws Exception{
-        HttpSession session = request.getSession();
-        MemberVo sessionMember = (MemberVo)session.getAttribute("member");
-        String id = sessionMember.getId();
-        memberVo.setId(id);
+        String username = getUsername(request);
+        memberVo.setId(username);
+
         JsonObject bodyMessage =
-                memberService.updatePw(
-                        memberVo, (String)map.get("oldPw"), request);
+                memberService.updatePw(memberVo);
+
+        return ResponseEntity.ok().body(bodyMessage.toString());
+    }
+
+    @RequestMapping(
+            value = "/sendEmailForUpdateEmail.do",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<?> updateEmail(
+            //필요: email
+            @RequestBody MemberVo memberVo,
+            HttpServletRequest request
+    ) throws Exception{
+        String username = getUsername(request);
+        memberVo.setId(username);
+
+        JsonObject bodyMessage =
+                memberService.sendEmailForUpdateEmail(memberVo);
+
+        return ResponseEntity.ok().body(bodyMessage.toString());
+    }
+
+    @CrossOrigin("*")
+    @RequestMapping(
+            value = "/approvalUpdateEmail.do",
+            method = RequestMethod.POST
+    )
+    public void approvalUpdateEmail(
+            MemberVo memberVo,
+            HttpServletResponse response
+    ) throws Exception{
+        memberService.approvalUpdateEmail(memberVo, response);
+    }
+
+
+    @RequestMapping(
+            value = "/updateName.do",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<?> updateName(
+            //필요: pw,
+            @RequestBody MemberVo memberVo,
+            HttpServletRequest request
+    ) throws Exception{
+        String username = getUsername(request);
+        memberVo.setId(username);
+
+        JsonObject bodyMessage =
+                memberService.updateName(memberVo);
 
         return ResponseEntity.ok().body(bodyMessage.toString());
     }
@@ -163,6 +214,43 @@ public class MemberController {
                 memberService.loginCheck(request);
 
         return ResponseEntity.ok().body(bodyMessage.toString());
+    }
+
+    @CrossOrigin("*")
+    @RequestMapping(
+            value = "/getMember",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<?> getMember(
+            HttpServletRequest request
+    ) throws UnsupportedEncodingException {
+
+        String username = getUsername(request);
+
+        JsonArray bodyMessage =
+                memberService.getMember(username);
+
+        return ResponseEntity.ok().body(bodyMessage.toString());
+
+    }
+
+    public String getUsername(
+            HttpServletRequest request
+    ) throws UnsupportedEncodingException {
+
+        request.setCharacterEncoding("utf-8");
+
+        //request 헤더의 Authorization 가져오기
+        final String requestTokenHeader =
+                request.getHeader("Authorization");
+
+        String username = null;
+        String jwtToken = requestTokenHeader.substring(7);
+
+        //username 가져오기
+        username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+
+        return username;
     }
 }
 

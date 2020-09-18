@@ -65,6 +65,13 @@ public class WebSecurityConfig
                     .antMatchers("/authenticate")
                         //모두 허용
                         .permitAll()
+                    .antMatchers("/member/checkId.do").permitAll()
+                    .antMatchers("/member/checkEmail.do").permitAll()
+                    .antMatchers("/member/addMember.do").permitAll()
+                    .antMatchers("/member/approvalMember.do").permitAll()
+                    .antMatchers("/member/approvalUpdateEmail.do").permitAll()
+                    .antMatchers("/member/findId.do").permitAll()
+                    .antMatchers("/member/findPw.do").permitAll()
                 .anyRequest()
                     .authenticated()
                     .and()

@@ -21,5 +21,9 @@ public interface MemberDao {
 
     String findId(String email);
 
-    void updatePw(MemberVo memberVo);
+    int updatePw(MemberVo memberVo);
+
+    void updateName(MemberVo memberVo);
+
+    int updateEmail(MemberVo memberVo);
 }

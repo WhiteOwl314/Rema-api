@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import seongju.remaapi.config.Information;
 import seongju.remaapi.dao.MemberDao;
 import seongju.remaapi.vo.MemberVo;
@@ -19,11 +21,15 @@ import java.io.PrintWriter;
 import java.util.Random;
 
 @Service
+@CrossOrigin
+@Transactional
 public class MemberServiceImpl implements MemberService{
     @Autowired
     private MemberDao memberDao;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
+    private MemberVo memberVo;
 
     @Override
     public String checkId(String id) {
@@ -126,6 +132,20 @@ public class MemberServiceImpl implements MemberService{
                 htmlContent += "<p>임시 비밀번호: ";
                 htmlContent += memberVo.getPw() + "</p></div>";
 
+            } else if (kind.equals("updateEmail")){
+                message.setSubject(
+                        "REMA 이메일 변경 인증메일입니다.",
+                        "UTF-8"
+                );
+                htmlContent += "<div align='center' style='border:1px solid black; font-family:verdana'>";
+                htmlContent += "<h3 style='color: blue;'>";
+                htmlContent += memberVo.getId() + "님 이메일 변경 인증메일입니다.</h3>";
+                htmlContent += "<div style='font-size: 130%'>";
+                htmlContent += "하단의 인증 버튼 클릭 시 정상적으로 이메일 변경 완료됩니다.</div><br/>";
+                htmlContent += "<form method='post' action='http://"+ Information.HOST_ADDRESS +"/member/approvalUpdateEmail.do'>";
+                htmlContent += "<input type='hidden' name='email' value='" + memberVo.getEmail() + "'>";
+                htmlContent += "<input type='hidden' name='id' value='" + memberVo.getId() + "'>";
+                htmlContent += "<input type='submit' value='인증'></form><br/></div>";
             }
 
             message.setText(
@@ -233,18 +253,7 @@ public class MemberServiceImpl implements MemberService{
                 bodyMessage.addProperty("pwIsCorrect",true);
                 bodyMessage.addProperty("emailIsAllowed", true);
 
-                JsonArray memberVoJsonContainer = new JsonArray();
-                JsonObject memberVoJson = new JsonObject();
-                memberVoJson.addProperty("id",memberVo.getId());
-                memberVoJson.addProperty("level",memberVo.getLevel());
-                memberVoJson.addProperty("name",memberVo.getName());
-                memberVoJson.addProperty("email",memberVo.getEmail());
-                memberVoJson.addProperty("isDeleted",memberVo.getIsDeleted());
-                memberVoJson.addProperty("log_data",memberVo.getLog_date());
-                memberVoJson.addProperty("reg_date",memberVo.getReg_date());
-                memberVoJson.addProperty("approval_status",memberVo.getApproval_status());
-
-                memberVoJsonContainer.add(memberVoJson);
+                JsonArray memberVoJsonContainer = createMemberInfo(memberVo);
 
                 bodyMessage.add("info",memberVoJsonContainer);
 
@@ -329,46 +338,17 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public JsonObject updatePw(
-            MemberVo memberVo,
-            String oldPw,
-            HttpServletRequest request
+            MemberVo memberVo
     )throws Exception {
 
         JsonObject bodyMessage = new JsonObject();
-        bodyMessage.addProperty("pwIsCorrect", false);
-        bodyMessage.addProperty("info","[]");
+        bodyMessage.addProperty("updatePw",false);
 
-        //옛 비밀번호가 다르다면
-        if(
-                !oldPw.equals(memberDao.login(
-                        memberVo.getId()).getPw())
-        ){
-            return bodyMessage;
-        } else {
+        try{
             memberDao.updatePw(memberVo);
-            memberVo = memberDao.login(memberVo.getId());
-
-            bodyMessage.addProperty("pwIsCorrect", true);
-            bodyMessage.addProperty("info","[]");
-
-            JsonArray memberVoJsonContainer = new JsonArray();
-            JsonObject memberVoJson = new JsonObject();
-            memberVoJson.addProperty("id",memberVo.getId());
-            memberVoJson.addProperty("level",memberVo.getLevel());
-            memberVoJson.addProperty("name",memberVo.getName());
-            memberVoJson.addProperty("email",memberVo.getEmail());
-            memberVoJson.addProperty("isDeleted",memberVo.getIsDeleted());
-            memberVoJson.addProperty("log_data",memberVo.getLog_date());
-            memberVoJson.addProperty("reg_date",memberVo.getReg_date());
-            memberVoJson.addProperty("approval_status",memberVo.getApproval_status());
-            memberVoJsonContainer.add(memberVoJson);
-
-            bodyMessage.add("info",memberVoJsonContainer);
-
-            //세션 업데이트
-            HttpSession session = request.getSession();
-            session.setAttribute("member", memberVo);
-
+            bodyMessage.addProperty("updatePw",true);
+            return bodyMessage;
+        } catch (Exception e){
             return bodyMessage;
         }
     }
@@ -409,18 +389,8 @@ public class MemberServiceImpl implements MemberService{
                 bodyMessage.addProperty("idIsExisted", true);
                 bodyMessage.addProperty("pwIsCorrect", true);
 
-                JsonArray memberVoJsonContainer = new JsonArray();
-                JsonObject memberVoJson = new JsonObject();
-                memberVoJson.addProperty("id", memberVo.getId());
-                memberVoJson.addProperty("level", memberVo.getLevel());
-                memberVoJson.addProperty("name", memberVo.getName());
-                memberVoJson.addProperty("email", memberVo.getEmail());
-                memberVoJson.addProperty("isDeleted", memberVo.getIsDeleted());
-                memberVoJson.addProperty("log_data", memberVo.getLog_date());
-                memberVoJson.addProperty("reg_date", memberVo.getReg_date());
-                memberVoJson.addProperty("approval_status", memberVo.getApproval_status());
 
-                memberVoJsonContainer.add(memberVoJson);
+                JsonArray memberVoJsonContainer = createMemberInfo(memberVo);
 
                 bodyMessage.add("info", memberVoJsonContainer);
 
@@ -431,4 +401,95 @@ public class MemberServiceImpl implements MemberService{
             }
         }
     }
+
+    @Override
+    public JsonArray getMember(String username) {
+        memberVo = memberDao.login(username);
+
+        JsonArray memberInfo = createMemberInfo(memberVo);
+
+        return memberInfo;
+    }
+
+    @Override
+    public JsonObject sendEmailForUpdateEmail(MemberVo memberVo) {
+
+        JsonObject bodyMessage = new JsonObject();
+        bodyMessage.addProperty("emailNotExisted",false);
+        bodyMessage.addProperty("sentEmail",false);
+
+        if(memberDao.checkEmail(memberVo.getEmail()) == 0){
+            bodyMessage.addProperty("emailNotExisted",true);
+        } else {
+            return bodyMessage;
+        }
+
+        try{
+            sendEmail(memberVo, "updateEmail");
+            bodyMessage.addProperty("sentEmail",true);
+            return bodyMessage;
+        } catch (Exception e){
+            return bodyMessage;
+        }
+    }
+
+    @Override
+    public void approvalUpdateEmail(
+            MemberVo memberVo,
+            HttpServletResponse response
+    ) throws IOException {
+        response.setContentType("text/html;charset=utf-8");
+        PrintWriter out = response.getWriter();
+        if (memberDao.updateEmail(memberVo) == 0) {
+            // 이메일 변경에 실패하였을 경우
+            out.println("<script>");
+            out.println("alert('실패했습니다. 다시 시도해주세요.');");
+            out.println("history.go(-1);");
+            out.println("</script>");
+            out.close();
+        } else {
+            // 이메일 인증을 성공하였을 경우
+            out.println("<script>");
+            out.println("alert('이메일 변경 되었습니다.');");
+            out.println("history.go(-1);");
+            out.println("</script>");
+            out.close();
+        }
+
+    }
+
+    @Override
+    public JsonObject updateName(
+            MemberVo memberVo
+    ) {
+        JsonObject bodyMessage = new JsonObject();
+        bodyMessage.addProperty("updateName",false);
+
+        try{
+            memberDao.updateName(memberVo);
+            bodyMessage.addProperty("updateName",true);
+            return bodyMessage;
+        } catch (Exception e){
+            return bodyMessage;
+        }
+    }
+
+    public JsonArray createMemberInfo(MemberVo memberVo){
+
+        JsonArray memberVoJsonContainer = new JsonArray();
+        JsonObject memberVoJson = new JsonObject();
+        memberVoJson.addProperty("id", memberVo.getId());
+        memberVoJson.addProperty("level", memberVo.getLevel());
+        memberVoJson.addProperty("name", memberVo.getName());
+        memberVoJson.addProperty("email", memberVo.getEmail());
+        memberVoJson.addProperty("isDeleted", memberVo.getIsDeleted());
+        memberVoJson.addProperty("log_data", memberVo.getLog_date());
+        memberVoJson.addProperty("reg_date", memberVo.getReg_date());
+        memberVoJson.addProperty("approval_status", memberVo.getApproval_status());
+
+        memberVoJsonContainer.add(memberVoJson);
+
+        return memberVoJsonContainer;
+    }
+
 }

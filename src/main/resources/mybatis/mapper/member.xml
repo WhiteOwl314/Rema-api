@@ -112,4 +112,18 @@
         where ID = #{id}
     </update>
 
+    <!-- 이름 변경 -->
+    <update id="updateName" parameterType="memberVo">
+        update member
+        set NAME = #{name}
+        where ID = #{id}
+    </update>
+
+    <!-- 이메일 변경 -->
+    <update id="updateEmail" parameterType="memberVo">
+        update member
+        set EMAIL = #{email}
+        where ID = #{id}
+    </update>
+
 </mapper>

@@ -1,5 +1,6 @@
 package seongju.remaapi.service;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import seongju.remaapi.vo.MemberVo;
 
@@ -36,10 +37,16 @@ public interface MemberService {
     JsonObject findPw(String id, String email) throws Exception;
 
     JsonObject updatePw(
-            MemberVo memberVo,
-            String oldPw,
-            HttpServletRequest request
+            MemberVo memberVo
     )throws Exception;
 
     JsonObject loginCheck(HttpServletRequest request);
+
+    JsonArray getMember(String username);
+
+    JsonObject sendEmailForUpdateEmail(MemberVo memberVo);
+
+    void approvalUpdateEmail(MemberVo memberVo, HttpServletResponse response) throws IOException;
+
+    JsonObject updateName(MemberVo memberVo);
 }
