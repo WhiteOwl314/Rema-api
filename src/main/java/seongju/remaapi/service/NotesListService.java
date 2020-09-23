@@ -12,4 +12,6 @@ public interface NotesListService {
     );
 
     JsonObject updateName(NotesListVo notesListVo);
+
+    JsonObject deleteNotesList(NotesListVo notesListVo);
 }

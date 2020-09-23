@@ -108,4 +108,28 @@ public class NotesListController {
 
         return ResponseEntity.ok().body(bodyMessage.toString());
     }
+
+
+    @RequestMapping(
+            value = "/deleteNotesList",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<?> deleteNotesList(
+            @RequestBody HashMap map,
+            HttpServletRequest request
+    ) throws Exception{
+        //Id 가져오기
+        String username = UtilMethod.getUsername(
+                request,
+                jwtTokenUtil
+        );
+        notesListVo.setId((Integer) map.get("id"));
+        notesListVo.setMember_id(username);
+
+
+        JsonObject bodyMessage =
+                notesListService.deleteNotesList(notesListVo);
+
+        return ResponseEntity.ok().body(bodyMessage.toString());
+    }
 }

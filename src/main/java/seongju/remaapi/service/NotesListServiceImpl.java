@@ -81,4 +81,19 @@ public class NotesListServiceImpl implements NotesListService {
         }
     }
 
+    @Override
+    public JsonObject deleteNotesList(NotesListVo notesListVo) {
+
+        JsonObject bodyMessage = new JsonObject();
+        bodyMessage.addProperty("success",false);
+
+        try{
+            notesListDao.deleteNotesList(notesListVo);
+            bodyMessage.addProperty("success",true);
+            return bodyMessage;
+        } catch (Exception e){
+            return bodyMessage;
+        }
+    }
+
 }

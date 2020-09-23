@@ -18,4 +18,6 @@ public interface NotesListDao {
     NotesListVo getNotesItem(NotesListVo notesListVo);
 
     void updateName(NotesListVo notesListVo);
+
+    void deleteNotesList(NotesListVo notesListVo);
 }

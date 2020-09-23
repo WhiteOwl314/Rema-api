@@ -74,4 +74,13 @@
             AND MEMBER_ID=#{member_id}
     </update>
 
+    <!-- 삭제 -->
+    <update id="deleteNotesList" parameterType="notesListVo">
+        update NOTES_LIST
+        set IS_DELETED = 1
+        where
+            ID = #{id}
+          AND MEMBER_ID=#{member_id}
+    </update>
+
 </mapper>
