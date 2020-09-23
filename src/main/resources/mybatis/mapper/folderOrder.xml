@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="seongju.remaapi.dao.FolderOrderDao">
+
+    <!-- 폴더오더리스트 -->
+    <select
+            id="getFolderOrderList"
+            resultType="folderOrderVo"
+            parameterType="string"
+    >
+        select
+            *
+        from FOLDER_ORDER
+        where MEMBER_ID = #{username}
+    </select>
+
+    <!-- 폴더오더 -->
+    <select
+            id="getFolderOrderByInId"
+            resultType="folderOrderVo"
+            parameterType="folderOrderVo"
+    >
+        select
+            *
+        from FOLDER_ORDER
+        where
+            MEMBER_ID = #{member_id}
+            AND IN_ID = #{in_id}
+    </select>
+
+    <!-- 추가 -->
+    <insert id="addFolderOrder" parameterType="java.util.Map">
+		<![CDATA[
+        insert into FOLDER_ORDER(
+                                 id,
+                                 FOLDER_ID,
+                                 IN_ID,
+                                 MEMBER_ID
+        )
+        values(
+                  #{id},
+                  #{folder_id},
+                  #{in_id},
+                  #{member_id}
+              )
+        ]]>
+	</insert>
+
+    <!-- 새로운 아이디 -->
+    <select id="selectNewId" resultType="int"  >
+		<![CDATA[
+        SELECT  nvl(max(ID), 0) + 1 from FOLDER_ORDER
+        ]]>
+	</select>
+
+</mapper>

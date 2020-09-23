@@ -1,4 +1,4 @@
-package seongju.remaapi.config;
+package seongju.remaapi.lib;
 
 public class Information {
     public static final String FROM_ADDRESS = "reviewmachinemail@gmail.com";

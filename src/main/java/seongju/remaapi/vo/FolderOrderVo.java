@@ -5,17 +5,11 @@ import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Component;
 
 @Data
-@Alias("noteVo")
+@Alias("folderOrderVo")
 @Component
-public class NoteVo {
+public class FolderOrderVo {
     private int id;
-    private String title;
-    private int order;
-    private int isReview;
     private int folder_id;
-    private String content;
+    private int in_id;
     private String member_id;
-    private int isDeleted;
-    private String creDate;
-    private String delDate;
 }

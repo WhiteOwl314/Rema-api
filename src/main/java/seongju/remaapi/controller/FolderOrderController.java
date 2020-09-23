@@ -8,24 +8,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import seongju.remaapi.config.jwt.JwtTokenUtil;
 import seongju.remaapi.lib.UtilMethod;
-import seongju.remaapi.service.NoteService;
+import seongju.remaapi.service.FolderOrderService;
 
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping(value = "/note")
-public class NoteController {
+@RequestMapping(value = "/folderOrder")
+public class FolderOrderController {
     @Autowired
-    private NoteService noteService;
+    private FolderOrderService folderOrderService;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
     @RequestMapping(
-            value = "/getNoteList",
+            value = "/getFolderOrderList",
             method = RequestMethod.GET
     )
-    public ResponseEntity<?> getNoteList(
+    public ResponseEntity<?> getFolderOrderList(
             HttpServletRequest request
     ) throws Exception {
 
@@ -37,8 +37,9 @@ public class NoteController {
 
         //Json형태의 FolderList 가져오기
         String bodyMessage =
-                noteService.getNoteList(username);
+                folderOrderService.getFolderOrderList(username);
 
         return ResponseEntity.ok().body(bodyMessage);
     }
+
 }

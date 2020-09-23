@@ -7,7 +7,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import seongju.remaapi.config.Information;
+import seongju.remaapi.lib.Information;
 import seongju.remaapi.dao.MemberDao;
 import seongju.remaapi.vo.MemberVo;
 
