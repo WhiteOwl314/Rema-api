@@ -16,4 +16,6 @@ public interface NotesListDao {
     int selectNewNO();
 
     NotesListVo getNotesItem(NotesListVo notesListVo);
+
+    void updateName(NotesListVo notesListVo);
 }

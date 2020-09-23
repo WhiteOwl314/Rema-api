@@ -1,5 +1,6 @@
 package seongju.remaapi.controller;
 
+import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,18 +46,17 @@ public class NotesListController {
     }
 
     @RequestMapping(
-            value="/addFolder",
+            value="/addNotesList",
             method= RequestMethod.POST
     )
-    public ResponseEntity<?> getNotesList(
-//            @RequestBody NotesListVo notesListVo,
-//            @RequestBody String current,
+    public ResponseEntity<?> addFolder(
             @RequestBody HashMap map,
             HttpServletRequest request
     ) throws UnsupportedEncodingException {
 
         notesListVo.setTitle((String) map.get("title"));
         notesListVo.setIs_first((Integer) map.get("is_first"));
+        notesListVo.setIs_folder((Integer) map.get("is_folder"));
         String currentClickId = (String) map.get("current");
 
 
@@ -85,4 +85,27 @@ public class NotesListController {
     }
 
 
+    @RequestMapping(
+            value = "/updateName",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<?> updateName(
+            @RequestBody HashMap map,
+            HttpServletRequest request
+    ) throws Exception{
+        //Id 가져오기
+        String username = UtilMethod.getUsername(
+                request,
+                jwtTokenUtil
+        );
+        notesListVo.setTitle((String) map.get("title"));
+        notesListVo.setId((Integer) map.get("id"));
+        notesListVo.setMember_id(username);
+
+
+        JsonObject bodyMessage =
+                notesListService.updateName(notesListVo);
+
+        return ResponseEntity.ok().body(bodyMessage.toString());
+    }
 }

@@ -1,5 +1,6 @@
 package seongju.remaapi.service;
 
+import com.google.gson.JsonObject;
 import seongju.remaapi.vo.NotesListVo;
 
 public interface NotesListService {
@@ -9,4 +10,6 @@ public interface NotesListService {
             NotesListVo notesListVo,
             int currentClickId
     );
+
+    JsonObject updateName(NotesListVo notesListVo);
 }

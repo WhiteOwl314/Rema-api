@@ -34,7 +34,7 @@
                   #{id},
                   #{title},
                   #{is_first},
-                  1,
+                  #{is_folder},
                   1,
                   SYSDATE,
                   #{member_id}
@@ -63,5 +63,15 @@
             AND IS_DELETED = 0
             AND ID=#{id}
     </select>
+
+
+    <!-- 이름 변경 -->
+    <update id="updateName" parameterType="notesListVo">
+        update NOTES_LIST
+        set title = #{title}
+        where
+            ID = #{id}
+            AND MEMBER_ID=#{member_id}
+    </update>
 
 </mapper>

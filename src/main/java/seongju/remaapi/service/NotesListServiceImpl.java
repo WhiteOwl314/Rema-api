@@ -65,4 +65,20 @@ public class NotesListServiceImpl implements NotesListService {
         }
     }
 
+    @Override
+    public JsonObject updateName(NotesListVo notesListVo) {
+
+
+        JsonObject bodyMessage = new JsonObject();
+        bodyMessage.addProperty("updateName",false);
+
+        try{
+            notesListDao.updateName(notesListVo);
+            bodyMessage.addProperty("updateName",true);
+            return bodyMessage;
+        } catch (Exception e){
+            return bodyMessage;
+        }
+    }
+
 }
