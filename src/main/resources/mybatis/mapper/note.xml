@@ -4,16 +4,43 @@
 
 <mapper namespace="seongju.remaapi.dao.NoteDao">
 
-    <!-- 노트리스트 -->
+    <!-- 노트조회 -->
     <select
-            id="getNoteList"
+            id="getNote"
             resultType="noteVo"
-            parameterType="string"
+            parameterType="java.util.Map"
     >
         select
             *
         from NOTE
-        where MEMBER_ID = #{username}
+        where
+            MEMBER_ID = #{member_id}
+            AND NOTE_ID = #{id}
     </select>
+
+    <!-- 새로운 아이디 -->
+    <select id="selectNewNO" resultType="int"  >
+		<![CDATA[
+        SELECT  nvl(max(ID), 0) + 1 from NOTE
+        ]]>
+	</select>
+
+    <!-- 초기추가 -->
+    <insert id="addNoteInitial" parameterType="noteVo">
+		<![CDATA[
+        insert into NOTE(
+                         id,
+                         NOTE_ID,
+                         CRE_DATE,
+                         MEMBER_ID
+        )
+        values(
+                  #{id},
+                  #{note_id},
+                  SYSDATE,
+                  #{member_id}
+              )
+        ]]>
+	</insert>
 
 </mapper>

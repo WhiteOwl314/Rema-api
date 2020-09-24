@@ -9,13 +9,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class NoteVo {
     private int id;
-    private String title;
-    private int order;
-    private int isReview;
-    private int folder_id;
+    private int note_id;
     private String content;
     private String member_id;
-    private int isDeleted;
-    private String creDate;
-    private String delDate;
+    private int is_deleted;
+    private String cre_date;
+    private String del_date;
 }

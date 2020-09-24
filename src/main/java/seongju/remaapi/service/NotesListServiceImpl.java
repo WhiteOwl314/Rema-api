@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import seongju.remaapi.dao.NoteDao;
 import seongju.remaapi.dao.NotesListDao;
 import seongju.remaapi.vo.NotesListVo;
 
@@ -22,6 +23,10 @@ public class NotesListServiceImpl implements NotesListService {
     private NotesListVo notesListVo;
     @Autowired
     private FolderOrderService folderOrderService;
+    @Autowired
+    private NoteDao noteDao;
+    @Autowired
+    private NoteService noteService;
 
     @Override
     public String getNotesList(String username) {
@@ -47,7 +52,8 @@ public class NotesListServiceImpl implements NotesListService {
         result.addProperty("success", false);
 
         try{
-            notesListVo.setId(notesListDao.selectNewNO());
+            int newId = notesListDao.selectNewNO();
+            notesListVo.setId(newId);
             notesListDao.addFolder(notesListVo);
             //folderOrder 추가
             if(currentClickId != 0){
@@ -55,6 +61,15 @@ public class NotesListServiceImpl implements NotesListService {
                         currentClickId,
                         notesListVo.getId(),
                         notesListVo.getMember_id()
+                );
+            }
+
+            //만약 노트면 노트테이블에 추가
+            if(notesListVo.getIs_folder() == 0){
+
+                noteService.addNoteInitial(
+                        notesListVo.getMember_id(),
+                        newId
                 );
             }
 
