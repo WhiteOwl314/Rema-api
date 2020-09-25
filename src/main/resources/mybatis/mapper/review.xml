@@ -63,7 +63,7 @@
     <!-- 내용 변경 -->
     <update id="UpdateReviewDate" parameterType="java.util.Map">
         update REVIEW_DATE
-        set date = to_date(#{date},'YYYY-MM-DD')
+        set "DATE" = to_date(#{date},'YYYY-MM-DD')
         where
             ID = #{id}
           AND MEMBER_ID=#{member_id}
