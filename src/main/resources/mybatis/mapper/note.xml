@@ -43,4 +43,14 @@
         ]]>
 	</insert>
 
+
+    <!-- 내용 변경 -->
+    <update id="updateContent" parameterType="noteVo">
+        update NOTE
+        set CONTENT = #{content}
+        where
+            ID = #{id}
+          AND MEMBER_ID=#{member_id}
+    </update>
+
 </mapper>

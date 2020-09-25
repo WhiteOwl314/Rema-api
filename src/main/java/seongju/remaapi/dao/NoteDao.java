@@ -15,4 +15,6 @@ public interface NoteDao {
     int selectNewNO();
 
     void addNoteInitial(NoteVo noteVo);
+
+    void updateContent(NoteVo noteVo);
 }

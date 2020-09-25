@@ -83,5 +83,10 @@ public class NoteServiceImpl implements NoteService{
         return is_folder;
     }
 
+    @Override
+    public void updateContent(NoteVo noteVo) {
+        noteDao.updateContent(noteVo);
+    }
+
 
 }
