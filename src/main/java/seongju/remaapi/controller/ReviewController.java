@@ -120,4 +120,30 @@ public class ReviewController {
 
         return ResponseEntity.ok().body(bodyMessage.toString());
     }
+
+
+    @RequestMapping(
+            value = "/deleteReviewDate",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<?> deleteReviewDate(
+            //{id,}
+            @RequestBody HashMap map,
+            HttpServletRequest request
+    ) throws Exception{
+        //Id 가져오기
+        String username = UtilMethod.getUsername(
+                request,
+                jwtTokenUtil
+        );
+
+        //삭제
+        map.put("member_id",username);
+        reviewService.deleteReviewDate(map);
+
+        JsonObject bodyMessage = new JsonObject();
+        bodyMessage.addProperty("success",true);
+
+        return ResponseEntity.ok().body(bodyMessage.toString());
+    }
 }

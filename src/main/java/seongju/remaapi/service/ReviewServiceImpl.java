@@ -59,4 +59,9 @@ public class ReviewServiceImpl implements ReviewService{
         reviewDao.UpdateReviewDate(map);
     }
 
+    @Override
+    public void deleteReviewDate(HashMap map) {
+        reviewDao.deleteReviewDate(map);
+    }
+
 }

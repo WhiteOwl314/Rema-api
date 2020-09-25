@@ -69,4 +69,13 @@
           AND MEMBER_ID=#{member_id}
     </update>
 
+
+    <!-- 삭제 -->
+    <update id="deleteReviewDate" parameterType="java.util.Map">
+        DELETE FROM REVIEW_DATE
+        where
+            ID = #{id}
+          AND MEMBER_ID=#{member_id}
+    </update>
+
 </mapper>

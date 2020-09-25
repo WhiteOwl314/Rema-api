@@ -10,4 +10,6 @@ public interface ReviewService {
     void addReviewDate(HashMap map);
 
     void UpdateReviewDate(HashMap map);
+
+    void deleteReviewDate(HashMap map);
 }

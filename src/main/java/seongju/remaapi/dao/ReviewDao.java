@@ -19,4 +19,6 @@ public interface ReviewDao {
     int selectNewNO();
 
     void UpdateReviewDate(HashMap map);
+
+    void deleteReviewDate(HashMap map);
 }
