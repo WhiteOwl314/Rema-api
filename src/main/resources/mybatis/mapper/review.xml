@@ -92,8 +92,9 @@
                 ID IN(
                     SELECT NOTE_ID
                     FROM REVIEW_DATE
-                    WHERE "DATE" = TO_DATE(#{date}, 'YYYY-MM-DD')
+                    WHERE "DATE" > TO_DATE(#{date}, 'YYYY-MM-DD')
                         AND MEMBER_ID = #{member_id}
+                        AND TO_DATE(#{date}, 'YYYY-MM-DD') +1 > "DATE"
                 )
         </select>
 
