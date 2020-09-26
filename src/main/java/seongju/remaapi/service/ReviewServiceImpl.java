@@ -64,4 +64,19 @@ public class ReviewServiceImpl implements ReviewService{
         reviewDao.deleteReviewDate(map);
     }
 
+
+    @Override
+    public String getReviewDateListByDate(HashMap map) {
+
+        List<NotesListVo> reviewDateList =
+                reviewDao.getReviewDateListByDate(map);
+
+        //변환
+        Gson gson = new Gson();
+        String reviewDateListJson =
+                gson.toJson(reviewDateList);
+
+        return reviewDateListJson;
+    }
+
 }

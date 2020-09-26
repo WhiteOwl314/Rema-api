@@ -12,4 +12,6 @@ public interface ReviewService {
     void UpdateReviewDate(HashMap map);
 
     void deleteReviewDate(HashMap map);
+
+    String getReviewDateListByDate(HashMap map);
 }

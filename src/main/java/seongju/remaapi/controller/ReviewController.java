@@ -146,4 +146,32 @@ public class ReviewController {
 
         return ResponseEntity.ok().body(bodyMessage.toString());
     }
+
+
+    @RequestMapping(
+            value = "/getReviewDateListByDate",
+            method = RequestMethod.GET
+    )
+    public ResponseEntity<?> getReviewDateListByDate(
+            //map: {date}
+            String date,
+            HttpServletRequest request
+    ) throws Exception {
+
+        //Id 가져오기
+        String username = UtilMethod.getUsername(
+                request,
+                jwtTokenUtil
+        );
+
+        HashMap map = new HashMap();
+        map.put("date",date);
+        map.put("member_id",username);
+
+        //Json형태 가져오기
+        String bodyMessage =
+                reviewService.getReviewDateListByDate(map);
+
+        return ResponseEntity.ok().body(bodyMessage);
+    }
 }

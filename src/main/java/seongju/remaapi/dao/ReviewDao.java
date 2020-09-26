@@ -2,6 +2,7 @@ package seongju.remaapi.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
+import seongju.remaapi.vo.NotesListVo;
 import seongju.remaapi.vo.ReviewVo;
 
 import java.util.HashMap;
@@ -21,4 +22,6 @@ public interface ReviewDao {
     void UpdateReviewDate(HashMap map);
 
     void deleteReviewDate(HashMap map);
+
+    List<NotesListVo> getReviewDateListByDate(HashMap map);
 }
